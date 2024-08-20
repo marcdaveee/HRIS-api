@@ -21,6 +21,9 @@ namespace leave_management_system_api.Data
             modelBuilder.Entity<Employee>()
                 .HasOne(e => e.Department).WithMany(e => e.Employees).HasForeignKey(e => e.DepartmentId).OnDelete(DeleteBehavior.NoAction);
 
+            //modelBuilder.Entity<Employee>()
+            //    .HasOne(e => e.Department).WithMany().HasForeignKey(e => e.DepartmentId).OnDelete(DeleteBehavior.NoAction);
+
 
             modelBuilder.Entity<Employee>().HasData(new Employee
             {

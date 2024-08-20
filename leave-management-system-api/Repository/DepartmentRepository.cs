@@ -21,12 +21,12 @@ namespace leave_management_system_api.Repository
 
         public async Task<IEnumerable<Department>?> GetAllAsync()
         {
-            return await _context.Departments.Include(d => d.Employees).ToListAsync();
+            return await _context.Departments.ToListAsync();
         }
 
-        public Task<Department?> GetByIdAsync(int id)
+        public async Task<Department?> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Departments.FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public void Update(Department model)

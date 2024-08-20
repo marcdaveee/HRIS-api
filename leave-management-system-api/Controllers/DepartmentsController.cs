@@ -24,7 +24,6 @@ namespace leave_management_system_api.Controllers
             var departments = await _unitOfWork.DepartmentRepository.GetAllAsync();
             return Ok(departments);
         }
-
      
 
     

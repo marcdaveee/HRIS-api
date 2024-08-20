@@ -22,11 +22,23 @@ namespace leave_management_system_api.Repository
         public async Task<IEnumerable<Employee>?> GetAllAsync()
         {
             return await _context.Employees.Include(e => e.Department).ToListAsync();
-        }
+            //var employeesWithDepartmentInfo = await _context.Employees
+            //    .Select(e => new
+            //    {
+            //        e.Id,
+            //        e.Lastname,
+            //        e.Firstname,
+            //        DepartmentId = e.Department.Id,
+            //        DepartmentName = e.Department.DepartmentName
+            //    })
+            //    .ToListAsync();
+            //return employeesWithDepartmentInfo
+
+        }    
 
         public async Task<Employee?> GetByIdAsync(int id)
         {
-            return await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            return await _context.Employees.Include(e => e.Department).FirstOrDefaultAsync(e => e.Id == id);
         }
       
 
