@@ -1,4 +1,6 @@
 ﻿using leave_management_system_api.Data;
+using leave_management_system_api.Dtos.Employee;
+using leave_management_system_api.Helpers;
 using leave_management_system_api.Interfaces;
 using leave_management_system_api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -19,9 +21,20 @@ namespace leave_management_system_api.Repository
             _context.Employees.Add(model);
         }
 
-        public async Task<IEnumerable<Employee>?> GetAllAsync()
+
+        public async Task<IEnumerable<Employee>?> GetAllAsync(QueryObject query)
         {
-            return await _context.Employees.Include(e => e.Department).ToListAsync();
+
+
+            var employees =  _context.Employees.Include(e => e.Department).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.EmployeeName))
+            {
+                employees = employees.Where(e => e.Firstname.Contains(query.EmployeeName) || e.Lastname.Contains(query.EmployeeName));
+            }
+
+            return await employees.ToListAsync();
+
             //var employeesWithDepartmentInfo = await _context.Employees
             //    .Select(e => new
             //    {
@@ -42,10 +55,17 @@ namespace leave_management_system_api.Repository
         }
       
 
-        public void Update(Employee model)
+        public void Update(Employee model, UpdateEmployeeDto updatedEmployee)
         {
-          _context.Update(model);
+            model.Firstname = updatedEmployee.Firstname;
+            model.Lastname = updatedEmployee.Lastname;
+            model.DepartmentId = updatedEmployee.DepartmentId;
         }
-        
+
+        public void Delete(Employee model)
+        {
+            _context.Employees.Remove(model);
+        }
+
     }
 }

@@ -28,5 +28,16 @@ namespace leave_management_system_api.Mappers
             };
         }
 
+        public static UpdateEmployeeDto toUpdateEmployeeDto(this Employee employeeModel)
+        {
+            return new UpdateEmployeeDto
+            {
+                Id = employeeModel.Id,
+                Firstname = employeeModel.Firstname,
+                Lastname = employeeModel.Lastname,
+                DepartmentId = employeeModel.DepartmentId
+            };
+        }
+
     }
 }

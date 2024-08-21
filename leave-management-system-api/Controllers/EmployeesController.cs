@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using leave_management_system_api.Interfaces;
 using leave_management_system_api.Mappers;
 using leave_management_system_api.Dtos.Employee;
+using leave_management_system_api.Helpers;
 
 namespace leave_management_system_api.Controllers
 {
@@ -18,9 +19,9 @@ namespace leave_management_system_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            var employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
+            var employees = await _unitOfWork.EmployeeRepository.GetAllAsync(query);
 
             if (employees != null)
             {
@@ -31,9 +32,7 @@ namespace leave_management_system_api.Controllers
             {
                 return NotFound("No data found");
             }            
-
-            
-                        
+                                    
         }
 
         [HttpGet("{id}")]
@@ -73,10 +72,66 @@ namespace leave_management_system_api.Controllers
             else
             {
                 return BadRequest("Error occured.");
+            }            
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateEmployeeDto updatedEmployee)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
             }
 
-            
+            // Return if id matches the employee to be updated
+            if(id != updatedEmployee.Id)
+            {
+                return BadRequest("Invalid Request");
+            }
 
+            var employeeModel = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
+
+            if(employeeModel == null)
+            {
+                return NotFound("Employee Not Found");
+            }
+
+            _unitOfWork.EmployeeRepository.Update(employeeModel, updatedEmployee);
+
+            var result = await _unitOfWork.SaveChangesAsync();
+
+            if (result)
+            {
+                return Ok(employeeModel.toUpdateEmployeeDto());
+            }
+            else
+            {
+                return BadRequest("Error occured");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var employeeModel = await _unitOfWork.EmployeeRepository.GetByIdAsync(id);
+
+            if(employeeModel == null)
+            {
+                return NotFound("Employee Not Found");
+            }
+
+            _unitOfWork.EmployeeRepository.Delete(employeeModel);
+
+            var result = await _unitOfWork.SaveChangesAsync();
+
+            if (result)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest("Error occured");
+            }
         }
     }
 }
